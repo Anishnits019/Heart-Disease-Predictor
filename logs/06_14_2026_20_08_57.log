@@ -1,0 +1,49 @@
+2026-06-14 20:09:01,146 - root - INFO - Initializing Data Ingestion component...
+2026-06-14 20:09:01,146 - root - INFO - Data Ingestion configuration loaded successfully.
+2026-06-14 20:09:01,146 - root - INFO - ==================== Starting Data Ingestion Process ====================
+2026-06-14 20:09:01,147 - root - INFO - Connecting to MongoDB database: 'Diabetes_DB' and collection: 'diabetes'...
+2026-06-14 20:09:01,163 - root - INFO - Fetching data records from MongoDB...
+2026-06-14 20:09:01,656 - root - INFO - Successfully fetched 70000 records from MongoDB.
+2026-06-14 20:09:01,980 - root - INFO - Converted MongoDB records into Pandas DataFrame.
+2026-06-14 20:09:01,983 - root - INFO - Dropping default MongoDB '_id' column from the DataFrame.
+2026-06-14 20:09:02,002 - root - INFO - DataFrame shape after extraction: (70000, 13)
+2026-06-14 20:09:02,042 - root - INFO - Exporting raw data to Feature Store path: Artifacts/2026_06_14_20_09_01/data_ingestion/feature_store/Diabetes_Data.csv
+2026-06-14 20:09:02,336 - root - INFO - Raw data exported to Feature Store successfully.
+2026-06-14 20:09:02,336 - root - INFO - Initiating Train-Test split on the DataFrame.
+2026-06-14 20:09:02,360 - root - INFO - Split completed. Train shape: (56000, 13), Test shape: (14000, 13)
+2026-06-14 20:09:02,360 - root - INFO - Creating directory structures for training and testing file splits.
+2026-06-14 20:09:02,361 - root - INFO - Saving training file to: Artifacts/2026_06_14_20_09_01/data_ingestion/ingested/train.csv
+2026-06-14 20:09:02,586 - root - INFO - Saving testing file to: Artifacts/2026_06_14_20_09_01/data_ingestion/ingested/test.csv
+2026-06-14 20:09:02,651 - root - INFO - Train-Test files saved successfully.
+2026-06-14 20:09:02,652 - root - INFO - Creating Data Ingestion Artifact object.
+2026-06-14 20:09:02,653 - root - INFO - Data Ingestion completed successfully. Artifact created: DataIngestionArtifact(trained_file_path='Artifacts/2026_06_14_20_09_01/data_ingestion/ingested/train.csv', test_file_path='Artifacts/2026_06_14_20_09_01/data_ingestion/ingested/test.csv', reference_data_file_path=None, trained_data_file_path=None)
+2026-06-14 20:09:02,653 - root - INFO - ==================== Data Ingestion Process Finished ====================
+2026-06-14 20:09:02,654 - root - INFO - Initializing Data Validation Component...
+2026-06-14 20:09:02,654 - root - INFO - Reading schema configuration file from path: data_schema/schema.yaml
+2026-06-14 20:09:02,661 - root - INFO - Schema configuration loaded successfully.
+2026-06-14 20:09:02,661 - root - INFO - ==================== Starting Data Validation Process ====================
+2026-06-14 20:09:02,661 - root - INFO - Default pipeline ingestion tracks found. Running validation split evaluation on Train vs Test artifacts.
+2026-06-14 20:09:02,661 - root - INFO - Reading CSV file from path: Artifacts/2026_06_14_20_09_01/data_ingestion/ingested/train.csv
+2026-06-14 20:09:02,763 - root - INFO - Reading CSV file from path: Artifacts/2026_06_14_20_09_01/data_ingestion/ingested/test.csv
+2026-06-14 20:09:02,781 - root - INFO - Validating column count. Expected (Schema): 13, Found (Data): 13
+2026-06-14 20:09:02,781 - root - INFO - Column count validation passed.
+2026-06-14 20:09:02,782 - root - INFO - Validating column count. Expected (Schema): 13, Found (Data): 13
+2026-06-14 20:09:02,782 - root - INFO - Column count validation passed.
+2026-06-14 20:09:02,782 - root - INFO - Starting Data Drift detection check using Kolmogorov-Smirnov (KS) Test...
+2026-06-14 20:09:02,803 - root - INFO - No drift in column: 'id' (p-value: 0.759511)
+2026-06-14 20:09:02,810 - root - INFO - No drift in column: 'age' (p-value: 0.655946)
+2026-06-14 20:09:02,825 - root - INFO - No drift in column: 'gender' (p-value: 1.000000)
+2026-06-14 20:09:02,831 - root - INFO - No drift in column: 'height' (p-value: 0.380850)
+2026-06-14 20:09:02,837 - root - INFO - No drift in column: 'weight' (p-value: 0.992092)
+2026-06-14 20:09:02,842 - root - INFO - No drift in column: 'ap_hi' (p-value: 0.999764)
+2026-06-14 20:09:02,847 - root - INFO - No drift in column: 'ap_lo' (p-value: 0.997527)
+2026-06-14 20:09:02,852 - root - INFO - No drift in column: 'cholesterol' (p-value: 0.999995)
+2026-06-14 20:09:02,856 - root - INFO - No drift in column: 'gluc' (p-value: 0.982980)
+2026-06-14 20:09:02,860 - root - INFO - No drift in column: 'smoke' (p-value: 0.999906)
+2026-06-14 20:09:02,865 - root - INFO - No drift in column: 'alco' (p-value: 0.905162)
+2026-06-14 20:09:02,874 - root - INFO - No drift in column: 'active' (p-value: 1.000000)
+2026-06-14 20:09:02,884 - root - INFO - No drift in column: 'cardio' (p-value: 1.000000)
+2026-06-14 20:09:02,884 - root - INFO - Saving generated data drift report to: Artifacts/2026_06_14_20_09_01/data_validation/drift_report/report.yaml
+2026-06-14 20:09:02,887 - root - INFO - Creating Data Validation Artifact data object.
+2026-06-14 20:09:02,887 - root - INFO - Data Validation completed successfully. Overall Pipeline Status Clear: True
+2026-06-14 20:09:02,887 - root - INFO - ==================== Data Validation Process Finished ====================

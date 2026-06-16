@@ -1,0 +1,20 @@
+2026-06-15 01:29:08,988 - root - INFO - Initializing Data Ingestion component...
+2026-06-15 01:29:08,988 - root - INFO - Data Ingestion configuration loaded successfully.
+2026-06-15 01:29:08,989 - root - INFO - ==================== Starting Data Ingestion Process ====================
+2026-06-15 01:29:08,989 - root - INFO - Connecting to MongoDB database: 'Diabetes_DB' and collection: 'diabetes'...
+2026-06-15 01:29:09,001 - root - INFO - Fetching data records from MongoDB...
+2026-06-15 01:29:09,567 - root - INFO - Successfully fetched 70000 records from MongoDB.
+2026-06-15 01:29:09,901 - root - INFO - Converted MongoDB records into Pandas DataFrame.
+2026-06-15 01:29:09,904 - root - INFO - Dropping default MongoDB '_id' column from the DataFrame.
+2026-06-15 01:29:09,918 - root - INFO - DataFrame shape after extraction: (70000, 13)
+2026-06-15 01:29:09,963 - root - INFO - Exporting raw data to Feature Store path: Artifacts/2026_06_15_01_29_08/data_ingestion/feature_store/Diabetes_Data.csv
+2026-06-15 01:29:10,287 - root - INFO - Raw data exported to Feature Store successfully.
+2026-06-15 01:29:10,366 - root - INFO - Initiating Train-Test split on the DataFrame.
+2026-06-15 01:29:10,379 - root - INFO - Split completed. Train shape: (55716, 14), Test shape: (13930, 14)
+2026-06-15 01:29:10,379 - root - INFO - Creating directory structures for training and testing file splits.
+2026-06-15 01:29:10,379 - root - INFO - Saving training file to: Artifacts/2026_06_15_01_29_08/data_ingestion/ingested/train.csv
+2026-06-15 01:29:10,890 - root - INFO - Saving testing file to: Artifacts/2026_06_15_01_29_08/data_ingestion/ingested/test.csv
+2026-06-15 01:29:10,985 - root - INFO - Train-Test files saved successfully.
+2026-06-15 01:29:10,987 - root - INFO - Creating Data Ingestion Artifact object.
+2026-06-15 01:29:10,987 - root - INFO - Data Ingestion completed successfully. Artifact created: DataIngestionArtifact(trained_file_path='Artifacts/2026_06_15_01_29_08/data_ingestion/ingested/train.csv', test_file_path='Artifacts/2026_06_15_01_29_08/data_ingestion/ingested/test.csv', reference_data_file_path=None, trained_data_file_path=None)
+2026-06-15 01:29:10,987 - root - INFO - ==================== Data Ingestion Process Finished ====================

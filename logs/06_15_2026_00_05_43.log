@@ -1,0 +1,34 @@
+2026-06-15 00:05:47,716 - root - INFO - Initializing Data Ingestion component...
+2026-06-15 00:05:47,717 - root - INFO - Data Ingestion configuration loaded successfully.
+2026-06-15 00:05:47,717 - root - INFO - ==================== Starting Data Ingestion Process ====================
+2026-06-15 00:05:47,717 - root - INFO - Connecting to MongoDB database: 'Diabetes_DB' and collection: 'diabetes'...
+2026-06-15 00:05:47,734 - root - INFO - Fetching data records from MongoDB...
+2026-06-15 00:05:48,314 - root - INFO - Successfully fetched 70000 records from MongoDB.
+2026-06-15 00:05:48,634 - root - INFO - Converted MongoDB records into Pandas DataFrame.
+2026-06-15 00:05:48,637 - root - INFO - Dropping default MongoDB '_id' column from the DataFrame.
+2026-06-15 00:05:48,651 - root - INFO - DataFrame shape after extraction: (70000, 13)
+2026-06-15 00:05:48,695 - root - INFO - Exporting raw data to Feature Store path: Artifacts/2026_06_15_00_05_47/data_ingestion/feature_store/Diabetes_Data.csv
+2026-06-15 00:05:49,000 - root - INFO - Raw data exported to Feature Store successfully.
+2026-06-15 00:05:49,000 - root - INFO - Initiating Train-Test split on the DataFrame.
+2026-06-15 00:05:49,025 - root - INFO - Split completed. Train shape: (56000, 13), Test shape: (14000, 13)
+2026-06-15 00:05:49,025 - root - INFO - Creating directory structures for training and testing file splits.
+2026-06-15 00:05:49,026 - root - INFO - Saving training file to: Artifacts/2026_06_15_00_05_47/data_ingestion/ingested/train.csv
+2026-06-15 00:05:49,249 - root - INFO - Saving testing file to: Artifacts/2026_06_15_00_05_47/data_ingestion/ingested/test.csv
+2026-06-15 00:05:49,321 - root - INFO - Train-Test files saved successfully.
+2026-06-15 00:05:49,324 - root - INFO - Creating Data Ingestion Artifact object.
+2026-06-15 00:05:49,324 - root - INFO - Data Ingestion completed successfully. Artifact created: DataIngestionArtifact(trained_file_path='Artifacts/2026_06_15_00_05_47/data_ingestion/ingested/train.csv', test_file_path='Artifacts/2026_06_15_00_05_47/data_ingestion/ingested/test.csv', reference_data_file_path=None, trained_data_file_path=None)
+2026-06-15 00:05:49,324 - root - INFO - ==================== Data Ingestion Process Finished ====================
+2026-06-15 00:05:49,327 - root - INFO - Initializing DataValidation component
+2026-06-15 00:05:49,332 - root - INFO - DataValidation initialized successfully
+2026-06-15 00:05:49,332 - root - INFO - Initiating data validation
+2026-06-15 00:05:49,332 - root - INFO - Reading data from Artifacts/2026_06_15_00_05_47/data_ingestion/ingested/train.csv
+2026-06-15 00:05:49,442 - root - INFO - Reading data from Artifacts/2026_06_15_00_05_47/data_ingestion/ingested/test.csv
+2026-06-15 00:05:49,462 - root - INFO - Validating number of columns
+2026-06-15 00:05:49,462 - root - INFO - Column count validation failed: expected 5, got 13
+2026-06-15 00:05:49,463 - root - INFO - Validating number of columns
+2026-06-15 00:05:49,463 - root - INFO - Column count validation failed: expected 5, got 13
+2026-06-15 00:05:49,463 - root - INFO - Starting drift detection
+2026-06-15 00:05:49,569 - root - INFO - Drift report saved at Artifacts/2026_06_15_00_05_47/data_validation/drift_report/report.yaml
+2026-06-15 00:05:49,570 - root - INFO - Starting drift detection
+2026-06-15 00:05:49,667 - root - INFO - Drift report saved at Artifacts/2026_06_15_00_05_47/data_validation/drift_report/report.yaml
+2026-06-15 00:05:49,667 - root - INFO - Data validation completed successfully

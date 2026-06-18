@@ -7,7 +7,7 @@ from diabetes.constant.training_pipeline import SCHEMA_FILE_PATH
 from diabetes.logging.logger import logging
 import pickle
 from sklearn.model_selection import GridSearchCV
-from sklearn.metrics import r2_score
+from sklearn.metrics import r2_score,f1_score
 
 def read_yaml_file(file_path):
     with open (file_path,"r") as yaml_file:
@@ -50,7 +50,7 @@ def evaluate_models(x_train,x_test,y_train,y_test,models,params):
     results={}
     for name,model in models.items():
      
-     gs=GridSearchCV(estimator=model,param_grid=params[name],cv=5,n_jobs=-1,scoring='accuracy')
+     gs=GridSearchCV(estimator=model,param_grid=params[name],cv=3,n_jobs=-1,scoring='accuracy')
      #n_jobs=-1 set all the used all vritual cores of the system 
      gs.fit(x_train,y_train)
 
@@ -59,8 +59,8 @@ def evaluate_models(x_train,x_test,y_train,y_test,models,params):
      y_train_pred=best_model.predict(x_train)
      y_test_pred=best_model.predict(x_test)
 
-     train_score = r2_score(y_train, y_train_pred)
-     test_score = r2_score(y_test, y_test_pred)
+     train_score = f1_score(y_train, y_train_pred)
+     test_score = f1_score(y_test, y_test_pred)
 
      results[name]={
         "train_score":train_score,

@@ -49,42 +49,42 @@ class ModelTrainer:
                 "AdaBoost": AdaBoostClassifier(),
             }
         params={
-            "Decision Tree": {
-                'max_depth':[3,4,5,6,8,10],        # allowed a definite depth such that model doesn't memeorize till infinite depth
-                'criterion':['gini', 'entropy'],   # criterion for creating a tree
-                'min_samples_split':[2,5,10,20],   # min samples requried to split a tree
-                'min_samples_leaf':[2,5,10,20],    # min samples required or left on leaf to split
-                'splitter':['best','random'],      # best parameters selection or random parameter selection
-                'max_features':['sqrt',2,4],       # how many features selectres based on sqrt(n) OR LOG(n) where N is the no of columns in a database
-            },
-            "Random Forest":{
-                'criterion': ['gini', 'entropy'],  # criterion for creating a tree
-                'max_depth':[3,4,5,6,8,10],        # allowed a definite depth such that model doesn't memeorize till infinite depth
-                'min_samples_split':[2,5,10,20],   # min samples requried to split a tree
-                'min_samples_leaf':[2,5,10,20],    # min samples required or left on leaf to split
-                'max_features':['sqrt',2,4,None],  # how many features selectres based on sqrt(n) OR LOG(n) where N is the no of columns in a database
-                'n_estimators': [50, 100, 200, 300], # independent tress to create for judgement           
-            },
-            "Gradient Boosting":{
-                'loss':['log_loss', 'exponential'],
-                'learning_rate':[.1,.01,.05,.001],
-                'subsample':[0.7,0.8,0.9],
-                'criterion':['squared_error', 'friedman_mse'],
-                'n_estimators': [50, 100, 200, 300],             # independent tress to create for judgement           
-                'max_depth':[3,4,5],                             # CRUCIAL: Added depth limit to stop massive overfitting
+            # "Decision Tree": {
+            #     'max_depth':[3,4,5],               # allowed a definite depth such that model doesn't memeorize till infinite depth
+            #     'criterion':['gini', 'entropy'],   # criterion for creating a tree
+            #     'min_samples_split':[5,10,20],     # min samples requried to split a tree
+            #     'min_samples_leaf':[5,10,20],      # min samples required or left on leaf to split
+            #     'splitter':['best','random'],      # best parameters selection or random parameter selection
+            #     'max_features':['sqrt',2,4],       # how many features selectres based on sqrt(n) OR LOG(n) where N is the no of columns in a database
+            # },
+            # "Random Forest":{
+            #     'criterion': ['gini', 'entropy'],  # criterion for creating a tree
+            #     'max_depth':[4,6,8,10],        # allowed a definite depth such that model doesn't memeorize till infinite depth
+            #     'min_samples_split':[5,10,20],   # min samples requried to split a tree
+            #     'min_samples_leaf':[5,10,20],    # min samples required or left on leaf to split
+            #     'max_features':['sqrt',2,4],  # how many features selectres based on sqrt(n) OR LOG(n) where N is the no of columns in a database
+            #     'n_estimators': [200, 300], # independent tress to create for judgement           
+            # },
+            # "Gradient Boosting":{
+            #     'loss':['log_loss', 'exponential'],
+            #     'learning_rate':[.05,.01],
+            #     'subsample':[0.7,0.8],
+            #     'criterion':['squared_error', 'friedman_mse'],
+            #     'n_estimators': [50, 100, 200, 300],             # independent tress to create for judgement           
+            #     'max_depth':[3,4,5],                             # CRUCIAL: Added depth limit to stop massive overfitting
 
-            },
+            # },
             "AdaBoost": {
                'learning_rate': [0.1, 0.05, 0.01],
                'n_estimators': [50, 100, 200.300],                    # Low estimators make AdaBoost underperform
                'algorithm': ['SAMME']                             # Explicitly set to avoid deprecation warnings
             },
-            "Logistic Regression": {
-            'penalty': ['l2'],                                 # Regularization type
-            'C': [0.01, 0.1, 1.0, 10.0],                       # Inverse regularization strength (smaller = less overfitting)
-            'solver': ['lbfgs', 'saga'],                       # Optimization algorithms
-            'max_iter': [100, 500]                             # Gives the solver enough time to converge
-    }
+    #         "Logistic Regression": {
+    #         'penalty': ['l2'],                                 # Regularization type
+    #         'C': [0.01, 0.1, 1.0, 10.0],                       # Inverse regularization strength (smaller = less overfitting)
+    #         'solver': ['lbfgs', 'saga'],                       # Optimization algorithms
+    #         'max_iter': [100, 500]                             # Gives the solver enough time to converge
+    # }
             
         }
         try:
@@ -96,11 +96,11 @@ class ModelTrainer:
  
             y_train_pred=best_model.predict(x_train)
             classification_train_metric=get_classification_score(y_train,y_train_pred)
-            self.track_mlflow(best_model,classification_train_metric)
+            self.track_mlflow(best_model,classification_train_metric,"train")
 
             y_test_pred=best_model.predict(x_test)
             classification_test_metric=get_classification_score(y_test,y_test_pred)
-            self.track_mlflow(best_model,classification_test_metric)
+            self.track_mlflow(best_model,classification_test_metric,"test")
 
             if best_model_score>self.model_config.expected_accuracy:
                 save_object(self.model_config.trained_model_file_path,best_model)

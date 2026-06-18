@@ -55,7 +55,8 @@ def evaluate_models(x_train,x_test,y_train,y_test,models,params):
      gs.fit(x_train,y_train)
 
      best_model=gs.best_estimator_
-
+     print(f"Took {time.time() - start:.1f} seconds")
+     print(gs.best_params_, gs.best_score_)
      y_train_pred=best_model.predict(x_train)
      y_test_pred=best_model.predict(x_test)
 

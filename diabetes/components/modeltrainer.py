@@ -76,7 +76,7 @@ class ModelTrainer:
             # },
             "AdaBoost": {
                'learning_rate': [0.1, 0.05, 0.01],
-               'n_estimators': [50, 100, 200.300],                    # Low estimators make AdaBoost underperform
+               'n_estimators': [50, 100, 200,300],                    # Low estimators make AdaBoost underperform
                'algorithm': ['SAMME']                             # Explicitly set to avoid deprecation warnings
             },
     #         "Logistic Regression": {

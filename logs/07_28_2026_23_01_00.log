@@ -1,0 +1,11 @@
+2026-07-28 23:01:01,182 - root - INFO - Initializing Data Ingestion component...
+2026-07-28 23:01:01,182 - root - INFO - Data Ingestion configuration loaded successfully.
+2026-07-28 23:01:01,182 - root - INFO - ==================== Starting Data Ingestion Process ====================
+2026-07-28 23:01:01,182 - root - INFO - Connecting to MongoDB database: 'Diabetes_DB' and collection: 'diabetes'...
+2026-07-28 23:01:01,187 - root - INFO - Fetching data records from MongoDB...
+2026-07-28 23:01:01,189 - root - INFO - Successfully fetched 0 records from MongoDB.
+2026-07-28 23:01:01,190 - root - INFO - Converted MongoDB records into Pandas DataFrame.
+2026-07-28 23:01:01,190 - root - INFO - DataFrame shape after extraction: (0, 0)
+2026-07-28 23:01:01,190 - root - INFO - Exporting raw data to Feature Store path: Artifacts/2026_07_28_23_01_01/data_ingestion/feature_store/Diabetes_Data.csv
+2026-07-28 23:01:01,190 - root - INFO - Raw data exported to Feature Store successfully.
+2026-07-28 23:01:01,191 - root - ERROR - Data Ingestion pipeline process failed.

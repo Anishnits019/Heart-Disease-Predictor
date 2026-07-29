@@ -1,0 +1,12 @@
+2026-07-28 23:50:46,025 - root - INFO - Initializing Data Ingestion component...
+2026-07-28 23:50:46,026 - root - INFO - Data Ingestion configuration loaded successfully.
+2026-07-28 23:50:46,026 - root - INFO - ==================== Starting Data Ingestion Process ====================
+2026-07-28 23:50:46,026 - root - INFO - Connecting to MongoDB database: 'heart_disease_db' and collection: 'cardio'...
+2026-07-28 23:50:46,379 - root - INFO - Fetching data records from MongoDB...
+2026-07-28 23:50:50,705 - root - INFO - Successfully fetched 70000 records from MongoDB.
+2026-07-28 23:50:50,731 - root - INFO - Converted MongoDB records into Pandas DataFrame.
+2026-07-28 23:50:50,732 - root - INFO - Dropping default MongoDB '_id' column from the DataFrame.
+2026-07-28 23:50:50,734 - root - INFO - DataFrame shape after extraction: (70000, 1)
+2026-07-28 23:50:50,738 - root - INFO - Exporting raw data to Feature Store path: Artifacts/2026_07_28_23_50_46/data_ingestion/feature_store/Cardio_Data.csv
+2026-07-28 23:50:50,783 - root - INFO - Raw data exported to Feature Store successfully.
+2026-07-28 23:50:50,784 - root - ERROR - Data Ingestion pipeline process failed.

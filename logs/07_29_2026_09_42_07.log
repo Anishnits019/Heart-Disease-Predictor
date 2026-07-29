@@ -1,0 +1,73 @@
+2026-07-29 09:42:08,159 - root - INFO - Starting the Fraud Detection Training Pipeline...
+2026-07-29 09:42:08,159 - root - INFO - >>> Phase 1: Data Ingestion Started
+2026-07-29 09:42:08,159 - root - INFO - Initializing Data Ingestion component...
+2026-07-29 09:42:08,159 - root - INFO - Data Ingestion configuration loaded successfully.
+2026-07-29 09:42:08,159 - root - INFO - ==================== Starting Data Ingestion Process ====================
+2026-07-29 09:42:08,159 - root - INFO - Connecting to MongoDB database: 'heart_disease_db' and collection: 'cardio'...
+2026-07-29 09:42:08,164 - root - INFO - Fetching data records from MongoDB...
+2026-07-29 09:42:08,342 - root - INFO - Successfully fetched 70000 records from MongoDB.
+2026-07-29 09:42:08,430 - root - INFO - Converted MongoDB records into Pandas DataFrame.
+2026-07-29 09:42:08,430 - root - INFO - Dropping default MongoDB '_id' column from the DataFrame.
+2026-07-29 09:42:08,431 - root - INFO - DataFrame shape after extraction: (70000, 13)
+2026-07-29 09:42:08,445 - root - INFO - Exporting raw data to Feature Store path: Artifacts/2026_07_29_09_42_08/data_ingestion/feature_store/Cardio_Data.csv
+2026-07-29 09:42:08,521 - root - INFO - Raw data exported to Feature Store successfully.
+2026-07-29 09:42:08,527 - root - INFO - Initiating Train-Test split on the DataFrame.
+2026-07-29 09:42:08,529 - root - INFO - Split completed. Train shape: (54764, 12), Test shape: (13691, 12)
+2026-07-29 09:42:08,529 - root - INFO - Creating directory structures for training and testing file splits.
+2026-07-29 09:42:08,529 - root - INFO - Saving training file to: Artifacts/2026_07_29_09_42_08/data_ingestion/ingested/train.csv
+2026-07-29 09:42:08,587 - root - INFO - Saving testing file to: Artifacts/2026_07_29_09_42_08/data_ingestion/ingested/test.csv
+2026-07-29 09:42:08,601 - root - INFO - Train-Test files saved successfully.
+2026-07-29 09:42:08,601 - root - INFO - Creating Data Ingestion Artifact object.
+2026-07-29 09:42:08,601 - root - INFO - Data Ingestion completed successfully. Artifact created: DataIngestionArtifact(trained_file_path='Artifacts/2026_07_29_09_42_08/data_ingestion/ingested/train.csv', test_file_path='Artifacts/2026_07_29_09_42_08/data_ingestion/ingested/test.csv', reference_data_file_path=None, trained_data_file_path=None)
+2026-07-29 09:42:08,601 - root - INFO - ==================== Data Ingestion Process Finished ====================
+2026-07-29 09:42:08,601 - root - INFO - <<< Phase 1: Data Ingestion Completed successfully.
+2026-07-29 09:42:08,601 - root - INFO - >>> Phase 2: Data Validation Started
+2026-07-29 09:42:08,601 - root - INFO - Initializing DataValidation component
+2026-07-29 09:42:08,602 - root - INFO - DataValidation initialized successfully
+2026-07-29 09:42:08,603 - root - INFO - Initiating data validation
+2026-07-29 09:42:08,603 - root - INFO - Reading data from Artifacts/2026_07_29_09_42_08/data_ingestion/ingested/train.csv
+2026-07-29 09:42:08,611 - root - INFO - Reading data from Artifacts/2026_07_29_09_42_08/data_ingestion/ingested/test.csv
+2026-07-29 09:42:08,614 - root - INFO - Validating number of columns
+2026-07-29 09:42:08,614 - root - INFO - Column count validation failed: expected 5, got 12
+2026-07-29 09:42:08,614 - root - INFO - Validating number of columns
+2026-07-29 09:42:08,614 - root - INFO - Column count validation failed: expected 5, got 12
+2026-07-29 09:42:08,614 - root - INFO - Starting drift detection
+2026-07-29 09:42:08,661 - root - INFO - Drift report saved at Artifacts/2026_07_29_09_42_08/data_validation/drift_report/report.yaml
+2026-07-29 09:42:08,661 - root - INFO - Starting drift detection
+2026-07-29 09:42:08,728 - root - INFO - Drift report saved at Artifacts/2026_07_29_09_42_08/data_validation/drift_report/report.yaml
+2026-07-29 09:42:08,728 - root - INFO - Data validation completed successfully
+2026-07-29 09:42:08,728 - root - INFO - <<< Phase 2: Data Validation Completed successfully.
+2026-07-29 09:42:08,728 - root - INFO - >>> Phase 3: Feature Extraction Started
+2026-07-29 09:42:08,728 - root - INFO - Initializing Feature Extraction Component.
+2026-07-29 09:42:08,728 - root - INFO - ==================== Starting Feature Extraction Pipeline ====================
+2026-07-29 09:42:08,728 - root - INFO - Loading validated dataset targets from validation artifact paths.
+2026-07-29 09:42:08,740 - root - INFO - Adding health and lifestyle features.
+2026-07-29 09:42:08,745 - root - INFO - Health and lifestyle indicators added successfully.
+2026-07-29 09:42:08,745 - root - INFO - Adding BP category features.
+2026-07-29 09:42:08,750 - root - INFO - BP category feature processing completed.
+2026-07-29 09:42:08,750 - root - INFO - Persisting processed engineering train matrix split out to: Artifacts/2026_07_29_09_42_08/data_feature_extraction/train.csv
+2026-07-29 09:42:08,895 - root - INFO - Persisting processed engineering test matrix split out to: Artifacts/2026_07_29_09_42_08/data_feature_extraction/test.csv
+2026-07-29 09:42:08,932 - root - INFO - Constructing complete Feature Extraction Pipeline Output Artifact object.
+2026-07-29 09:42:08,932 - root - INFO - ==================== Feature Extraction Pipeline Success ====================
+2026-07-29 09:42:08,932 - root - INFO - <<< Phase 3: Feature Extraction Completed successfully.
+2026-07-29 09:42:08,932 - root - INFO - >>> Phase 4: Data Transformation Started
+2026-07-29 09:42:08,932 - root - INFO - DataTransformation component initialized successfully.
+2026-07-29 09:42:08,932 - root - INFO - ==================== Starting Data Transformation ====================
+2026-07-29 09:42:08,932 - root - INFO - Reading data from Artifacts/2026_07_29_09_42_08/data_feature_extraction/train.csv
+2026-07-29 09:42:08,960 - root - INFO - Reading data from Artifacts/2026_07_29_09_42_08/data_feature_extraction/test.csv
+2026-07-29 09:42:08,967 - root - INFO - Train data shape: (54764, 24), Test data shape: (13691, 24)
+2026-07-29 09:42:08,967 - root - INFO - Building preprocessor pipeline
+2026-07-29 09:42:08,967 - root - INFO - Preprocessor pipeline built successfully.
+2026-07-29 09:42:08,968 - root - INFO - Train input shape: (54764, 23), Train target shape: (54764,)
+2026-07-29 09:42:08,968 - root - INFO - Test input shape: (13691, 23), Test target shape: (13691,)
+2026-07-29 09:42:08,968 - root - INFO - Applying fit_transform on train data
+2026-07-29 09:42:08,984 - root - INFO - Applying transform on test data
+2026-07-29 09:42:08,986 - root - INFO - Train transformed shape: (54764, 13), Test transformed shape: (13691, 13)
+2026-07-29 09:42:08,986 - root - INFO - Final train array shape: (54764, 14), Final test array shape: (13691, 14)
+2026-07-29 09:42:08,986 - root - INFO - Saving transformed train array to Artifacts/2026_07_29_09_42_08/data_transformation/transformed_data/train.npy
+2026-07-29 09:42:08,989 - root - INFO - Saving transformed test array to Artifacts/2026_07_29_09_42_08/data_transformation/transformed_data/test.npy
+2026-07-29 09:42:08,990 - root - INFO - Saving preprocessor object to Artifacts/2026_07_29_09_42_08/data_transformation/transformed_object/preprocessing.pkl
+2026-07-29 09:42:08,992 - root - INFO - ==================== Data Transformation Completed ====================
+2026-07-29 09:42:08,993 - root - INFO - <<< Phase 4: Data Transformation Completed successfully.
+2026-07-29 09:42:08,993 - root - INFO - >>> Phase 5: Model Training Started
+2026-07-29 09:42:12,984 - root - ERROR - Pipeline failed with an error: Error occured in script:[/Users/anish/Documents/Heart-Disease-Predictor/cardio/components/modeltrainer.py]/ at line number:[168] error message:[Error occured in script:[/Users/anish/Documents/Heart-Disease-Predictor/cardio/components/modeltrainer.py]/ at line number:[138] error message:[Error occured in script:[/Users/anish/Documents/Heart-Disease-Predictor/cardio/utils/ml_utils/metric/classification_metric.py]/ at line number:[30] error message:[__init__() got an unexpected keyword argument 'accuracy_score']]]

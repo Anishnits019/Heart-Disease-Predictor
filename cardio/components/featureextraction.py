@@ -1,15 +1,12 @@
-from sklearn.pipeline import Pipeline
-from sklearn.impute import KNNImputer
-from sklearn.preprocessing import StandardScaler, OrdinalEncoder, RobustScaler
-from sklearn.compose import ColumnTransformer
+import os
+import sys
+import numpy as np
+import pandas as pd
+
 from cardio.entity.artifact_entity import DataValidationArtifact, FeatureExtractionArtifact 
 from cardio.entity.config_entity import FeatureExtractionConfig
 from cardio.exception.exception import CustomException
 from cardio.logging.logger import logging
-import pandas as pd
-import numpy as np
-import os
-import sys
 
 
 class FeatureExtraction:
@@ -29,24 +26,29 @@ class FeatureExtraction:
             test_df = test_df.copy()
 
             for df in [train_df, test_df]:
+                # 1. Hemodynamic metrics
                 df['bmi'] = df['weight'] / ((df['height'] / 100) ** 2)
                 df['pulse_pressure'] = df['ap_hi'] - df['ap_lo']
                 df['map'] = df['ap_lo'] + (df['ap_hi'] - df['ap_lo']) / 3
                 
+                # 2. Risk Indicators
                 df["Hypertension"] = ((df["ap_hi"] >= 140) | (df["ap_lo"] >= 90)).astype(int)
                 df["Age_Cholesterol"] = df["age"] * df["cholesterol"]
                 df["Normal_BP"] = ((df["ap_hi"] < 120) & (df["ap_lo"] < 80)).astype(int)
                 df["High_Cholesterol"] = (df["cholesterol"] > 1).astype(int)
                 df["High_Glucose"] = (df["gluc"] > 1).astype(int)
 
+                # 3. Age Bins (Cast to string to avoid CatBoost 'category' dtype error)
                 bins = [29, 40, 50, 60, 70]
                 labels = ['30-40', '40-50', '50-64', '60+']
-                df['age_bins'] = pd.cut(df['age'], bins=bins, labels=labels)
+                df['age_bins'] = pd.cut(df['age'], bins=bins, labels=labels).astype(str)
 
+                # 4. BMI Categories (Cast to string to avoid CatBoost 'category' dtype error)
                 bmi_bins = [0, 18.5, 25, 30, 35, 100]
                 bmi_labels = ['underweight', 'normal', 'overweight', 'obese', 'severely_obese']
-                df['bmi_category'] = pd.cut(df['bmi'], bins=bmi_bins, labels=bmi_labels)
+                df['bmi_category'] = pd.cut(df['bmi'], bins=bmi_bins, labels=bmi_labels).astype(str)
 
+                # 5. Lifestyle Score
                 df['unhealthy_life_style'] = df['smoke'] + df['alco'] + (1 - df['active'])
 
             logging.info("Health and lifestyle indicators added successfully.")
@@ -62,20 +64,23 @@ class FeatureExtraction:
             train_df = train_df.copy()
             test_df = test_df.copy()
 
+            # AHA standard blood pressure classification rules
             conditions_train = [
                 (train_df['ap_hi'] < 120) & (train_df['ap_lo'] < 80),
-                (train_df['ap_hi'] < 130),
-                (train_df['ap_hi'] < 140)
+                (train_df['ap_hi'] >= 120) & (train_df['ap_hi'] < 130) & (train_df['ap_lo'] < 80),
+                ((train_df['ap_hi'] >= 130) & (train_df['ap_hi'] < 140)) | ((train_df['ap_lo'] >= 80) & (train_df['ap_lo'] < 90))
             ]
+            
             conditions_test = [
                 (test_df['ap_hi'] < 120) & (test_df['ap_lo'] < 80),
-                (test_df['ap_hi'] < 130),
-                (test_df['ap_hi'] < 140)
+                (test_df['ap_hi'] >= 120) & (test_df['ap_hi'] < 130) & (test_df['ap_lo'] < 80),
+                ((test_df['ap_hi'] >= 130) & (test_df['ap_hi'] < 140)) | ((test_df['ap_lo'] >= 80) & (test_df['ap_lo'] < 90))
             ]
+            
             choices = ['normal', 'elevated', 'stage1']
 
-            train_df['bp_category'] = np.select(conditions_train, choices, default='stage2')
-            test_df['bp_category'] = np.select(conditions_test, choices, default='stage2')
+            train_df['bp_category'] = np.select(conditions_train, choices, default='stage2').astype(str)
+            test_df['bp_category'] = np.select(conditions_test, choices, default='stage2').astype(str)
 
             logging.info("BP category feature processing completed.")
             return train_df, test_df

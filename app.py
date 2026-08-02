@@ -2,7 +2,7 @@ import streamlit as st
 import numpy as np
 import pandas as pd
 import os
-import joblib  # or import pickle / load your pipeline artifact
+import joblib
 
 # Set up Streamlit Page Configuration
 st.set_page_config(
@@ -59,8 +59,8 @@ st.divider()
 # ==========================================
 def apply_feature_engineering(df: pd.DataFrame) -> pd.DataFrame:
     """
-    Applies the exact custom feature engineering transformations
-    from your FeatureExtraction pipeline.
+    Applies custom feature engineering transformations
+    and retains ONLY the features the model was trained on.
     """
     df = df.copy()
 
@@ -70,18 +70,11 @@ def apply_feature_engineering(df: pd.DataFrame) -> pd.DataFrame:
     df['map'] = df['ap_lo'] + (df['ap_hi'] - df['ap_lo']) / 3
 
     # Binary Risk Indicators
-    df["Hypertension"] = ((df["ap_hi"] >= 140) | (df["ap_lo"] >= 90)).astype(int)
-    df["Age_Cholesterol"] = df["age"] * df["cholesterol"]
     df["Normal_BP"] = ((df["ap_hi"] < 120) & (df["ap_lo"] < 80)).astype(int)
     df["High_Cholesterol"] = (df["cholesterol"] > 1).astype(int)
     df["High_Glucose"] = (df["gluc"] > 1).astype(int)
 
-    # Age Bins (Added .astype(str) here)
-    bins = [29, 40, 50, 60, 70]
-    labels = ['30-40', '40-50', '50-64', '60+']
-    df['age_bins'] = pd.cut(df['age'], bins=bins, labels=labels).astype(str)
-
-    # BMI Bins (Added .astype(str) here)
+    # BMI Bins (converted to string for CatBoost compatibility)
     bmi_bins = [0, 18.5, 25, 30, 35, 100]
     bmi_labels = ['underweight', 'normal', 'overweight', 'obese', 'severely_obese']
     df['bmi_category'] = pd.cut(df['bmi'], bins=bmi_bins, labels=bmi_labels).astype(str)
@@ -89,7 +82,7 @@ def apply_feature_engineering(df: pd.DataFrame) -> pd.DataFrame:
     # Lifestyle Score
     df['unhealthy_life_style'] = df['smoke'] + df['alco'] + (1 - df['active'])
 
-    # Blood Pressure Category (Added .astype(str) here)
+    # Blood Pressure Category
     conditions = [
         (df['ap_hi'] < 120) & (df['ap_lo'] < 80),
         (df['ap_hi'] >= 120) & (df['ap_hi'] < 130) & (df['ap_lo'] < 80),
@@ -98,7 +91,14 @@ def apply_feature_engineering(df: pd.DataFrame) -> pd.DataFrame:
     choices = ['normal', 'elevated', 'stage1']
     df['bp_category'] = np.select(conditions, choices, default='stage2').astype(str)
 
-    return df
+    # EXACT TRAINING FEATURE SET (8 Numerical + 12 Categorical = 20 Features)
+    num_cols = ['age', 'height', 'weight', 'ap_hi', 'ap_lo', 'bmi', 'pulse_pressure', 'map']
+    cat_cols = ['bmi_category', 'bp_category', 'gender', 'cholesterol', 'gluc', 'smoke', 'alco', 'active', 'unhealthy_life_style', 'Normal_BP', 'High_Cholesterol', 'High_Glucose']
+
+    final_cols = num_cols + cat_cols
+    
+    # Select and order columns strictly matching the training matrix
+    return df[final_cols]
 
 
 # ==========================================
@@ -106,7 +106,7 @@ def apply_feature_engineering(df: pd.DataFrame) -> pd.DataFrame:
 # ==========================================
 if st.button("🔍 Predict Cardiovascular Risk Probability", use_container_width=True, type="primary"):
     
-    # Build initial raw input dataframe matching raw feature structure
+    # Build initial raw input dataframe
     raw_df = pd.DataFrame([{
         'age': age_years,  # Pass age in years (or age_years * 365 if model trained on days)
         'gender': gender,
@@ -121,7 +121,7 @@ if st.button("🔍 Predict Cardiovascular Risk Probability", use_container_width
         'active': active
     }])
 
-    # Apply your Feature Extraction calculations
+    # Apply calculations and strictly filter features
     processed_df = apply_feature_engineering(raw_df)
 
     st.markdown("### ⚙️ Processed Input Features")
@@ -130,12 +130,12 @@ if st.button("🔍 Predict Cardiovascular Risk Probability", use_container_width
 
     # --- Load & Predict with Trained Model ---
     model_path = "model.pkl"  # Replace with your actual model file path
-    
+    train_transform = preprocessor.fit_transform(processed_df)
     if os.path.exists(model_path):
         model = joblib.load(model_path)
         
         # Predict probability for class 1 (cardio present)
-        probability = model.predict_proba(processed_df)[0][1]
+        probability = model.predict_proba(train_transform)[0][1]
         prob_percentage = probability * 100
 
         st.markdown("### 📊 Prediction Result")

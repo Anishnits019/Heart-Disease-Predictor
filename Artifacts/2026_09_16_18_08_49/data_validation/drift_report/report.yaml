@@ -1,0 +1,101 @@
+active:
+  is_drift: &id001 !!python/object/apply:numpy._core.multiarray.scalar
+  - !!python/object/apply:numpy.dtype
+    args:
+    - b1
+    - false
+    - true
+    state: !!python/tuple
+    - 3
+    - '|'
+    - null
+    - null
+    - null
+    - -1
+    - -1
+    - 0
+  - !!binary |
+    AA==
+  p_value: !!python/object/apply:numpy._core.multiarray.scalar
+  - &id002 !!python/object/apply:numpy.dtype
+    args:
+    - f8
+    - false
+    - true
+    state: !!python/tuple
+    - 3
+    - <
+    - null
+    - null
+    - null
+    - -1
+    - -1
+    - 0
+  - !!binary |
+    AAAAAAAA8D8=
+age:
+  is_drift: *id001
+  p_value: !!python/object/apply:numpy._core.multiarray.scalar
+  - *id002
+  - !!binary |
+    AAAAAAAA8D8=
+alco:
+  is_drift: *id001
+  p_value: !!python/object/apply:numpy._core.multiarray.scalar
+  - *id002
+  - !!binary |
+    AAAAAAAA8D8=
+ap_hi:
+  is_drift: *id001
+  p_value: !!python/object/apply:numpy._core.multiarray.scalar
+  - *id002
+  - !!binary |
+    AAAAAAAA8D8=
+ap_lo:
+  is_drift: *id001
+  p_value: !!python/object/apply:numpy._core.multiarray.scalar
+  - *id002
+  - !!binary |
+    AAAAAAAA8D8=
+cardio:
+  is_drift: *id001
+  p_value: !!python/object/apply:numpy._core.multiarray.scalar
+  - *id002
+  - !!binary |
+    AAAAAAAA8D8=
+cholesterol:
+  is_drift: *id001
+  p_value: !!python/object/apply:numpy._core.multiarray.scalar
+  - *id002
+  - !!binary |
+    AAAAAAAA8D8=
+gender:
+  is_drift: *id001
+  p_value: !!python/object/apply:numpy._core.multiarray.scalar
+  - *id002
+  - !!binary |
+    AAAAAAAA8D8=
+gluc:
+  is_drift: *id001
+  p_value: !!python/object/apply:numpy._core.multiarray.scalar
+  - *id002
+  - !!binary |
+    AAAAAAAA8D8=
+height:
+  is_drift: *id001
+  p_value: !!python/object/apply:numpy._core.multiarray.scalar
+  - *id002
+  - !!binary |
+    AAAAAAAA8D8=
+smoke:
+  is_drift: *id001
+  p_value: !!python/object/apply:numpy._core.multiarray.scalar
+  - *id002
+  - !!binary |
+    AAAAAAAA8D8=
+weight:
+  is_drift: *id001
+  p_value: !!python/object/apply:numpy._core.multiarray.scalar
+  - *id002
+  - !!binary |
+    AAAAAAAA8D8=

@@ -1,8 +1,9 @@
-import streamlit as st
+from pathlib import Path
+import pickle
+
 import numpy as np
 import pandas as pd
-import os
-import joblib
+import streamlit as st
 
 # Set up Streamlit Page Configuration
 st.set_page_config(
@@ -11,10 +12,36 @@ st.set_page_config(
     layout="wide",
 )
 
-st.title("🫀 Cardiovascular Disease Risk Predictor")
-st.markdown(
-    "Enter patient details below. The app transforms these raw inputs using your custom feature engineering pipeline before feeding them to the trained ML model."
-)
+st.title("Cardiovascular Disease Risk Predictor")
+st.markdown("Estimate cardiovascular disease risk using the trained CatBoost model.")
+
+ROOT_DIR = Path(__file__).resolve().parent
+
+
+@st.cache_resource
+def load_artifacts():
+    model_candidates = [
+        ROOT_DIR / "model.pkl",
+        *sorted((ROOT_DIR / "Artifacts").glob("*/model_trainer/trained_model/model.pkl")),
+    ]
+    preprocessor_candidates = sorted(
+        (ROOT_DIR / "Artifacts").glob("*/data_transformation/transformed_object/preprocessing.pkl")
+    )
+
+    model_path = next((path for path in model_candidates if path.exists()), None)
+    preprocessor_path = next(
+        (path for path in reversed(preprocessor_candidates) if path.exists()), None
+    )
+    if model_path is None or preprocessor_path is None:
+        raise FileNotFoundError(
+            "Could not find model.pkl and preprocessing.pkl in the project artifacts."
+        )
+
+    with model_path.open("rb") as model_file:
+        model = pickle.load(model_file)
+    with preprocessor_path.open("rb") as preprocessor_file:
+        preprocessor = pickle.load(preprocessor_file)
+    return model, preprocessor
 
 st.divider()
 
@@ -26,8 +53,7 @@ col1, col2, col3 = st.columns(3)
 with col1:
     st.subheader("📋 Objective Features")
     
-    # Dataset stores age in days or years. Prompting for years is user-friendly:
-    age_years = st.number_input("Age (Years)", min_value=18, max_value=100, value=50, step=1)
+    age_years = st.number_input("Age (years)", min_value=18.0, max_value=100.0, value=50.0, step=0.1)
     
     gender_str = st.radio("Gender", options=["Female", "Male"])
     gender = 1 if gender_str == "Female" else 2
@@ -54,51 +80,21 @@ with col3:
 
 st.divider()
 
-# ==========================================
-# 2. FEATURE ENGINEERING TRANSFORM FUNCTION
-# ==========================================
 def apply_feature_engineering(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Applies custom feature engineering transformations
-    and retains ONLY the features the model was trained on.
-    """
-    df = df.copy()
-
-    # Hemodynamic / Health Metrics
-    df['bmi'] = df['weight'] / ((df['height'] / 100) ** 2)
-    df['pulse_pressure'] = df['ap_hi'] - df['ap_lo']
-    df['map'] = df['ap_lo'] + (df['ap_hi'] - df['ap_lo']) / 3
-
-    # Binary Risk Indicators
-    df["Normal_BP"] = ((df["ap_hi"] < 120) & (df["ap_lo"] < 80)).astype(int)
-    df["High_Cholesterol"] = (df["cholesterol"] > 1).astype(int)
-    df["High_Glucose"] = (df["gluc"] > 1).astype(int)
-
-    # BMI Bins (converted to string for CatBoost compatibility)
-    bmi_bins = [0, 18.5, 25, 30, 35, 100]
-    bmi_labels = ['underweight', 'normal', 'overweight', 'obese', 'severely_obese']
-    df['bmi_category'] = pd.cut(df['bmi'], bins=bmi_bins, labels=bmi_labels).astype(str)
-
-    # Lifestyle Score
-    df['unhealthy_life_style'] = df['smoke'] + df['alco'] + (1 - df['active'])
-
-    # Blood Pressure Category
-    conditions = [
-        (df['ap_hi'] < 120) & (df['ap_lo'] < 80),
-        (df['ap_hi'] >= 120) & (df['ap_hi'] < 130) & (df['ap_lo'] < 80),
-        ((df['ap_hi'] >= 130) & (df['ap_hi'] < 140)) | ((df['ap_lo'] >= 80) & (df['ap_lo'] < 90))
+    engineered = df.copy()
+    engineered["bmi"] = engineered["weight"] / (engineered["height"] / 100) ** 2
+    engineered["bmi_category"] = pd.cut(
+        engineered["bmi"],
+        bins=[0, 18.5, 25, 30, 35, 100],
+        labels=["underweight", "normal", "overweight", "obese", "severely_obese"],
+    ).astype(str)
+    return engineered[
+        [
+            "age", "height", "weight", "ap_hi", "ap_lo", "bmi",
+            "gender", "cholesterol", "gluc", "smoke", "alco", "active",
+            "bmi_category",
+        ]
     ]
-    choices = ['normal', 'elevated', 'stage1']
-    df['bp_category'] = np.select(conditions, choices, default='stage2').astype(str)
-
-    # EXACT TRAINING FEATURE SET (8 Numerical + 12 Categorical = 20 Features)
-    num_cols = ['age', 'height', 'weight', 'ap_hi', 'ap_lo', 'bmi', 'pulse_pressure', 'map']
-    cat_cols = ['bmi_category', 'bp_category', 'gender', 'cholesterol', 'gluc', 'smoke', 'alco', 'active', 'unhealthy_life_style', 'Normal_BP', 'High_Cholesterol', 'High_Glucose']
-
-    final_cols = num_cols + cat_cols
-    
-    # Select and order columns strictly matching the training matrix
-    return df[final_cols]
 
 
 # ==========================================
@@ -121,37 +117,27 @@ if st.button("🔍 Predict Cardiovascular Risk Probability", use_container_width
         'active': active
     }])
 
-    # Apply calculations and strictly filter features
     processed_df = apply_feature_engineering(raw_df)
+    try:
+        model, preprocessor = load_artifacts()
+        transformed_input = preprocessor.transform(processed_df)
+        probability = float(model.predict_proba(transformed_input)[0, 1])
+    except Exception as error:
+        st.error(f"Prediction could not be completed: {error}")
+        st.stop()
 
-    st.markdown("### ⚙️ Processed Input Features")
-    st.caption("This is the exact feature matrix constructed for the machine learning model:")
-    st.dataframe(processed_df, use_container_width=True)
-
-    # --- Load & Predict with Trained Model ---
-    model_path = "model.pkl"  # Replace with your actual model file path
-    train_transform = preprocessor.fit_transform(processed_df)
-    if os.path.exists(model_path):
-        model = joblib.load(model_path)
-        
-        # Predict probability for class 1 (cardio present)
-        probability = model.predict_proba(train_transform)[0][1]
-        prob_percentage = probability * 100
-
-        st.markdown("### 📊 Prediction Result")
-        res_col1, res_col2 = st.columns([1, 2])
-        
-        with res_col1:
-            st.metric("Disease Probability", f"{prob_percentage:.1f}%")
-
-        with res_col2:
-            if prob_percentage < 35:
-                st.success("🟢 **Low Risk**: The model predicts low cardiovascular risk.")
-            elif 35 <= prob_percentage < 65:
-                st.warning("🟡 **Moderate Risk**: Moderate cardiovascular risk detected.")
-            else:
-                st.error("🔴 **High Risk**: High cardiovascular risk detected.")
-
-        st.progress(int(prob_percentage))
-    else:
-        st.info("💡 **Model file not found.** Place your trained model (`model.pkl` or pipeline) in the project directory to get live predictions.")
+    prob_percentage = probability * 100
+    st.markdown("### Prediction Result")
+    result_col, detail_col = st.columns([1, 2])
+    with result_col:
+        st.metric("Disease probability", f"{prob_percentage:.1f}%")
+    with detail_col:
+        if prob_percentage < 35:
+            st.success("Low risk according to the model.")
+        elif prob_percentage < 65:
+            st.warning("Moderate risk according to the model.")
+        else:
+            st.error("High risk according to the model.")
+    st.progress(probability)
+    with st.expander("View model input"):
+        st.dataframe(processed_df, use_container_width=True, hide_index=True)

@@ -1,6 +1,8 @@
 pandas
 numpy
 scikit-learn
+catboost
+joblib
 python-dotenv
 pymongo
 mlflow

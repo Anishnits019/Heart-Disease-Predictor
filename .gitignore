@@ -5,7 +5,6 @@ commands.txt
 .venv
 Artifacts
 venv
-.env
 mlflow.db
 mlruns/
 commands.txt
@@ -15,3 +14,4 @@ logs
 fraud_detection_system.egg-info
 __pycache__/
 *.parquet
+.env

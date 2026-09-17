@@ -112,7 +112,7 @@ if st.button("🔍 Predict Cardiovascular Risk Probability", use_container_width
 
     processed_df = apply_feature_engineering(raw_df)
     try:
-        model, preprocessor = load_artifacts()
+        model, preprocessor = load_models()
         transformed_input = preprocessor.transform(processed_df)
         probability = float(model.predict_proba(transformed_input)[0, 1])
     except Exception as error:

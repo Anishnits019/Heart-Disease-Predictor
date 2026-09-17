@@ -1,0 +1,2 @@
+2026-09-17 07:29:24,129 - dotenv.main - WARNING - python-dotenv could not parse statement starting at line 1
+2026-09-17 07:29:24,129 - root - ERROR - MONGO_DB_URL environment variable is missing in the .env file.

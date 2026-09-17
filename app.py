@@ -4,6 +4,7 @@ import pickle
 import numpy as np
 import pandas as pd
 import streamlit as st
+from huggingface_hub import hf_hub_download
 
 # Set up Streamlit Page Configuration
 st.set_page_config(
@@ -19,29 +20,21 @@ ROOT_DIR = Path(__file__).resolve().parent
 
 
 @st.cache_resource
-def load_artifacts():
-    model_candidates = [
-        ROOT_DIR / "model.pkl",
-        *sorted((ROOT_DIR / "Artifacts").glob("*/model_trainer/trained_model/model.pkl")),
-    ]
-    preprocessor_candidates = sorted(
-        (ROOT_DIR / "Artifacts").glob("*/data_transformation/transformed_object/preprocessing.pkl")
-    )
+def load_models():
+    # Download the files from your public Hugging Face repo
+    model_path = hf_hub_download(repo_id="Anishnits-4567/HD_MODEL", filename="model.pkl")
+    scaler_path = hf_hub_download(repo_id="Anishnits-4567/HD_MODEL", filename="preprocessing.pkl")
+    
+    # Load them using pickle
+    with open(model_path, 'rb') as f:
+        model = pickle.load(f)
+    with open(scaler_path, 'rb') as f:
+        scaler = pickle.load(f)
+        
+    return model, scaler
 
-    model_path = next((path for path in model_candidates if path.exists()), None)
-    preprocessor_path = next(
-        (path for path in reversed(preprocessor_candidates) if path.exists()), None
-    )
-    if model_path is None or preprocessor_path is None:
-        raise FileNotFoundError(
-            "Could not find model.pkl and preprocessing.pkl in the project artifacts."
-        )
-
-    with model_path.open("rb") as model_file:
-        model = pickle.load(model_file)
-    with preprocessor_path.open("rb") as preprocessor_file:
-        preprocessor = pickle.load(preprocessor_file)
-    return model, preprocessor
+# Call the function to load your models
+model, scaler = load_models()
 
 st.divider()
 

@@ -1,3 +1,8 @@
 .env
-.venv
-
+.venv/
+__pycache__/
+catboost_info/
+logs/
+mlflow.db
+mlruns/
+catboost_info/
